@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const geocoder = require('../utils/geocoder');
+//const geocoder = require('../utils/geocoder');
 
 const HostelSchema = new mongoose.Schema({
   name: {
@@ -32,25 +32,25 @@ const HostelSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add an address'],
   },
-  location: {
-    // GeoJSON Point
-    type: {
-      type: String,
-      enum: ['Point'],
-      //required: true,
-    },
-    coordinates: {
-      type: [Number],
-      //required: true,
-      index: '2dsphere',
-    },
-    formattedAddress: String,
-    street: String,
-    city: String,
-    state: String,
-    zipcode: String,
-    country: String,
-  },
+  // location: {
+  //   // GeoJSON Point
+  //   type: {
+  //     type: String,
+  //     enum: ['Point'],
+  //     //required: true,
+  //   },
+  //   coordinates: {
+  //     type: [Number],
+  //     //required: true,
+  //     index: '2dsphere',
+  //   },
+  //   formattedAddress: String,
+  //   street: String,
+  //   city: String,
+  //   state: String,
+  //   zipcode: String,
+  //   country: String,
+  // },
   averageRating: {
     type: Number,
     min: [1, 'Rating must be atleat 1'],
@@ -58,33 +58,33 @@ const HostelSchema = new mongoose.Schema({
   },
   photo: String,
 
-  mess: {
-    type: String,
-    default: true,
-  },
-  typeOfMealServed: {
-    type: [String],
-    enum: ['Breakfast', 'Lunch', 'Dinner'],
-  },
+  // mess: {
+  //   type: String,
+  //   default: true,
+  // },
+  // typeOfMealServed: {
+  //   type: [String],
+  //   enum: ['Breakfast', 'Lunch', 'Dinner'],
+  // },
   hostelType: {
     type: String,
     required: [true, 'Please add Hostel type i.e Male hostel or Female hostel'],
     enum: ['maleHostel', 'femaleHostel'],
   },
-  guestEntrance: {
-    type: Boolean,
-    default: false,
-  },
-  advanceSecurity: Number,
-  wifi: {
-    type: Boolean,
-    default: true,
-  },
+  // guestEntrance: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // advanceSecurity: Number,
+  // wifi: {
+  //   type: Boolean,
+  //   default: true,
+  // },
 
-  laundary: {
-    type: Boolean,
-    default: true,
-  },
+  // laundary: {
+  //   type: Boolean,
+  //   default: true,
+  // },
 
   createdAt: {
     type: Date,
@@ -107,22 +107,22 @@ HostelSchema.pre('save', function (next) {
 
 // Geocode & create location field
 
-HostelSchema.pre('save', async function (next) {
-  const loc = await geocoder.geocode(this.address);
-  this.location = {
-    type: 'Point',
-    coordinates: [loc[0].longitude, loc[0].latitude],
-    formattedAddress: loc[0].formattedAddress,
-    street: loc[0].streetName,
-    city: loc[0].city,
-    zipcode: loc[0].zipcode,
-    country: loc[0].country,
-  };
-  // Do not save address in DB
-  this.address = undefined;
+// HostelSchema.pre('save', async function (next) {
+//   const loc = await geocoder.geocode(this.address);
+//   this.location = {
+//     type: 'Point',
+//     coordinates: [loc[0].longitude, loc[0].latitude],
+//     formattedAddress: loc[0].formattedAddress,
+//     street: loc[0].streetName,
+//     city: loc[0].city,
+//     zipcode: loc[0].zipcode,
+//     country: loc[0].country,
+//   };
+//   // Do not save address in DB
+//   this.address = undefined;
 
-  next();
-});
+//   next();
+// });
 
 // Cascade delete courses when a hostel is deleted
 HostelSchema.pre('remove', async function (next) {

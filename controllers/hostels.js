@@ -165,6 +165,7 @@ exports.hostelPhotoUpload = asyncHandler(async (req, res, next) => {
   cloudinary.uploader.upload(req.file.path, async function (result) {
     // add cloudinary url for the image to the campground object under image property
     req.body.photo = result.secure_url;
+    console.log(result.secure_url);
     //console.log(req.body.photo);
     const hostel = await Hostel.findByIdAndUpdate(req.params.id, req.body);
 
