@@ -38,7 +38,7 @@ exports.getHostel = asyncHandler(async (req, res, next) => {
 exports.createHostel = asyncHandler(async (req, res, next) => {
   // Add user to req.body
   req.body.user = req.user.id;
-
+//jlldfskjfkljsdkljflksdjfkl
   // Check for published hostel
   const publishedHostel = await Hostel.findOne({ user: req.body.user });
 
