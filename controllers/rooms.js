@@ -1,9 +1,9 @@
-const asyncHandler = require('../middleware/async');
-const ErrorResponse = require('../utils/errorResponse');
-var multer = require('multer');
-var fs = require('fs');
-const Room = require('../models/Room');
-const Hostel = require('../models/Hostel');
+const asyncHandler = require("../middleware/async");
+const ErrorResponse = require("../utils/errorResponse");
+var multer = require("multer");
+var fs = require("fs");
+const Room = require("../models/Room");
+const Hostel = require("../models/Hostel");
 
 // @desc        Get all rooms
 // @route       GET /api/v1/rooms
@@ -28,8 +28,8 @@ exports.getrooms = asyncHandler(async (req, res, next) => {
 // @access      Public
 exports.getroom = asyncHandler(async (req, res, next) => {
   const room = await Room.findById(req.params.id).populate({
-    path: 'hostel',
-    select: 'name description',
+    path: "hostel",
+    select: "name description",
   });
 
   if (!room) {
@@ -59,7 +59,7 @@ exports.addRoom = asyncHandler(async (req, res, next) => {
   }
 
   // Make sure user is hostel owner
-  if (hostel.user.toString() !== req.user.id && req.user.role !== 'admin') {
+  if (hostel.user.toString() !== req.user.id && req.user.role !== "admin") {
     return next(
       new ErrorResponse(
         `User ${req.user.id} is not authorized to add a course to hostel ${hostel._id}`,
@@ -97,7 +97,7 @@ exports.updateRoom = asyncHandler(async (req, res, next) => {
   }
 
   // Make sure user is room owner
-  if (room.user.toString() !== req.user.id && req.user.role !== 'admin') {
+  if (room.user.toString() !== req.user.id && req.user.role !== "admin") {
     return next(
       new ErrorResponse(
         `User ${req.user.id} is not authorized to update room`,
@@ -130,7 +130,7 @@ exports.deleteRoom = asyncHandler(async (req, res, next) => {
   }
 
   // Make sure user is room owner
-  if (room.user.toString() !== req.user.id && req.user.role !== 'admin') {
+  if (room.user.toString() !== req.user.id && req.user.role !== "admin") {
     return next(
       new ErrorResponse(
         `User ${req.user.id} is not authorized to delete room`,
@@ -146,3 +146,44 @@ exports.deleteRoom = asyncHandler(async (req, res, next) => {
     data: {},
   });
 });
+
+//@desc   Book room
+//@route  POST /api/v1/rooms/:id/book
+//@access Public
+exports.BookRoom = async (req, res, next) => {
+  let room = await Room.findById(req.params.id);
+  if(room.roommats.includes(req.user.id)) {
+    return res.status(400).json({success:false, message:"Already booked this room"})
+  }
+  if (!room) {
+    return next(new ErrorResponse(`Room not found with this ${req.params.id}`));
+  }
+  // room.roommats.length < room.seater
+  if (room.roommats.length < room.seater) {
+    // room = await Room.findByIdAndUpdate(
+    //   req.user.id,
+    //   // { $push: { roommats: req.user.id } },
+    //   {seater: 5},
+    //   {
+    //     new: true,
+    //     runValidators: true,
+    //   }
+    // );
+    room.roommats.push(req.user.id);
+    await room.save();
+    console.log(room);
+
+    if (!room) {
+      return next(new ErrorResponse("Room not booked", 400));
+    }
+    return res.status(201).json({
+      success: true,
+      message: "Room booked successfully",
+    });
+  }else {
+    return res.status(400).json({
+      success:false,
+     message: "Room already full, try another"
+    })
+  }
+};

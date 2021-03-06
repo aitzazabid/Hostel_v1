@@ -5,6 +5,7 @@ const {
   addRoom,
   updateRoom,
   deleteRoom,
+  BookRoom
 } = require('../controllers/rooms');
 
 const Room = require('../models/Room');
@@ -30,5 +31,6 @@ router
   .get(getroom)
   .put(protect, authorize('publisher', 'admin'), updateRoom)
   .delete(protect, authorize('publisher', 'admin'), deleteRoom);
+  router.route("/:id/book").post(protect, BookRoom);
 
 module.exports = router;

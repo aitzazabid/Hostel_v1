@@ -2,18 +2,14 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
-const colors = require('colors');
-const multer = require('multer');
-const bodyParser = require('body-parser');
-//const ejs = require('ejs');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
+const colors = require('colors');
 
 // Load env variables
 dotenv.config({ path: './config/config.env' });
-// Set EJS as templating engine
-//app.set('view engine', 'ejs');
+
 
 // Connect to database
 connectDB();
@@ -27,6 +23,7 @@ const reviews = require('./routes/reviews');
 const shopReviews = require('./routes/shopReview');
 const shops = require('./routes/shops');
 const products = require('./routes/products');
+const jobs = require('./routes/jobs');
 
 //app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -48,6 +45,7 @@ app.use('/api/v1/reviews', reviews);
 app.use('/api/v1/shops', shops);
 app.use('/api/v1/products', products);
 app.use('/api/v1/shop-review', shopReviews);
+app.use('/api/v1/jobs', jobs);
 
 app.use(errorHandler);
 

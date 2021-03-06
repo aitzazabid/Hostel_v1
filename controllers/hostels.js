@@ -1,8 +1,8 @@
-const Hostel = require('../models/Hostel');
-const asyncHandler = require('../middleware/async');
-const geocoder = require('../utils/geocoder');
-const cloudinary = require('cloudinary');
-const ErrorResponse = require('../utils/errorResponse');
+const Hostel = require("../models/Hostel");
+const asyncHandler = require("../middleware/async");
+const geocoder = require("../utils/geocoder");
+const cloudinary = require("cloudinary");
+const ErrorResponse = require("../utils/errorResponse");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -14,21 +14,24 @@ cloudinary.config({
 // @route       GET /api/v1/hostels
 // @access      Public
 exports.getHostels = asyncHandler(async (req, res, next) => {
-  let hostels = await Hostel.find().populate({
-    path: 'room'
-  });
+  let hostels = await Hostel.find()
+    .populate({
+      path: "room",
+    })
+    .sort([[("created_at", -1)]]);
   const search = req.body.search;
-let copy=[];
+  let copy = [];
 
-  hostels.forEach(element => {
-    if( element.name.toLowerCase().includes(search.toLowerCase()) ||
-    element.address.toLowerCase().includes(search.toLowerCase()) || 
-    element.hostelType.toLowerCase().includes(search.toLowerCase())){
+  hostels.forEach((element) => {
+    if (
+      element.name.toLowerCase().includes(search.toLowerCase()) ||
+      element.address.toLowerCase().includes(search.toLowerCase()) ||
+      element.hostelType.toLowerCase().includes(search.toLowerCase())
+    ) {
       copy.push(element);
-      
     }
 
-    if(copy.length > 0 ) {
+    if (copy.length > 0) {
       hostels = copy;
     }
   });
@@ -65,7 +68,7 @@ exports.createHostel = asyncHandler(async (req, res, next) => {
   const publishedHostel = await Hostel.findOne({ user: req.body.user });
 
   // if the user is not an admin, they can only add one hostel
-  if (publishedHostel && req.user.role !== 'admin') {
+  if (publishedHostel && req.user.role !== "admin") {
     next(
       new ErrorResponse(
         `The user with ID ${req.user.id} has already published a hostel`,
@@ -93,7 +96,7 @@ exports.updateHostel = asyncHandler(async (req, res, next) => {
   }
 
   // Make sure user is hostel owner
-  if (hostel.user.toString() !== req.user.id && req.user.role !== 'admin') {
+  if (hostel.user.toString() !== req.user.id && req.user.role !== "admin") {
     next(
       new ErrorResponse(
         `User ${req.params.id} is not authorized to update this hostel`,
@@ -122,7 +125,7 @@ exports.deleteHostel = asyncHandler(async (req, res, next) => {
   }
 
   // Make sure the user is hostel owner
-  if (hostel.user.toString() !== req.user.id && req.user.role !== 'admin') {
+  if (hostel.user.toString() !== req.user.id && req.user.role !== "admin") {
     return next(
       new ErrorResponse(
         `User ${req.params.id} is not authorized to delete this hostel`,
@@ -153,7 +156,7 @@ exports.getHostelInRadius = asyncHandler(async (req, res, next) => {
 
   const hostels = await Hostel.find({
     location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
-  });
+  }).sort([[("created_at", -1)]]);
 
   res.status(200).json({
     success: true,
@@ -175,7 +178,7 @@ exports.hostelPhotoUpload = asyncHandler(async (req, res, next) => {
   }
 
   // Make sure user is hostel owner
-  if (hostel.user.toString() !== req.user.id && req.user.role !== 'admin') {
+  if (hostel.user.toString() !== req.user.id && req.user.role !== "admin") {
     return next(
       new ErrorResponse(
         `User ${req.params.id} is not authorized to update this hostel`,
